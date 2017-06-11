@@ -8,14 +8,100 @@
     xmlns:exsl="http://exslt.org/common"
 	exclude-result-prefixes="xsl date strings exsl">
 
-    <xsl:output method="text"  encoding="utf-8"/>
+	<xsl:output method="text"  encoding="utf-8"/>
 
-    <!-- Identity transform (for testing) -->
+	<xsl:variable name="areas" >
+		<xsl:for-each select="rfc/front/area">
+		<xsl:choose>
+			<xsl:when test="position() = 1">"<xsl:value-of select="normalize-space(.)"/>"</xsl:when>
+		<xsl:otherwise>, "<xsl:value-of select="normalize-space(.)"/>"</xsl:otherwise>
+	</xsl:choose>
+</xsl:for-each>
+</xsl:variable>
 
-    <xsl:template match="/ | @* | node()">
+	<xsl:variable name="workgroups" >
+		<xsl:for-each select="rfc/front/workgroup">
+		<xsl:choose>
+			<xsl:when test="position() = 1">"<xsl:value-of select="normalize-space(.)"/>"</xsl:when>
+		<xsl:otherwise>, "<xsl:value-of select="normalize-space(.)"/>"</xsl:otherwise>
+	</xsl:choose>
+</xsl:for-each>
+</xsl:variable>
+
+	<xsl:variable name="keywords" >
+		<xsl:for-each select="rfc/front/keyword">
+		<xsl:choose>
+			<xsl:when test="position() = 1">"<xsl:value-of select="normalize-space(.)"/>"</xsl:when>
+		<xsl:otherwise>, "<xsl:value-of select="normalize-space(.)"/>"</xsl:otherwise>
+	</xsl:choose>
+</xsl:for-each>
+</xsl:variable>
+
+<xsl:template name="author">
+	<xsl:param name="auth"/>
+
+[[author]]
+initials = "<xsl:value-of select="($auth)/@initials"/>"
+surname = "<xsl:value-of select="($auth)/@surname"/>"
+fullname = "<xsl:value-of select="($auth)/@fullname"/>"
+role = "<xsl:value-of select="($auth)/@role"/>"
+organization = "<xsl:value-of select="($auth)/organization"/>"
+[author.address]
+street = "<xsl:value-of select="($auth)/address/street"/>"
+city = "<xsl:value-of select="($auth)/address/city"/>"
+region = "<xsl:value-of select="($auth)/address/region"/>"
+code = "<xsl:value-of select="($auth)/address/code"/>"
+country = "<xsl:value-of select="($auth)/address/country"/>"
+phone = "<xsl:value-of select="($auth)/address/phone"/>"
+facsimile = "<xsl:value-of select="($auth)/address/facsimile"/>"
+email = "<xsl:value-of select="($auth)/address/email"/>"
+uri = "<xsl:value-of select="($auth)/address/uri"/>"
+</xsl:template>
+
+    <xsl:template match="/">
+%%%
+    title = "<xsl:value-of select="normalize-space(rfc/front/title)"/>"
+    abbrev = "<xsl:value-of select="rfc/title/@abbrev"/>"
+    category = "<xsl:value-of select="rfc/@category"/>"
+    docName = "<xsl:value-of select="rfc/@docName"/>"
+    updates = <xsl:value-of select="rfc/@updates"/>
+    obsoletes = <xsl:value-of select="rfc/@obsoletes"/>
+    ipr = "<xsl:value-of select="rfc/@ipr"/>"
+    area =  [<xsl:value-of select="$areas"/>]
+    workgroup = [<xsl:value-of select="$workgroups"/>]
+    keyword =  [<xsl:value-of select="$keywords"/>]
+    date = <xsl:value-of select="rfc/front/date/@day"/>/<xsl:value-of select="rfc/front/date/@month"/>/<xsl:value-of select="rfc/front/date/@year"/>
+
+    <xsl:for-each select="rfc/front/author">
+	    <xsl:call-template name="author">
+		    <xsl:with-param name="auth" select="."/>
+	</xsl:call-template>
+</xsl:for-each>
+%%%
+
+.# Abstract
+<xsl:value-of select="rfc/front/abstract"/>
+
+    <xsl:for-each select="rfc/front/note">
+.# Note
+<xsl:value-of select="."/>
+</xsl:for-each>
+<!-- nothing else from front material -->
+    </xsl:template>	
+
+    <xsl:template match="rfc/middle">
+{mainmatter}
+</xsl:template>
+<xsl:template match="rfc/middle/section">
+	    # <xsl:value-of select="./@title"/>
+
         <xsl:copy>
             <xsl:apply-templates select="@* | node()" />
         </xsl:copy>
     </xsl:template>
-
+    <xsl:template match="rfc/back">
+        <xsl:copy>
+            <xsl:apply-templates select="@* | node()" />
+        </xsl:copy>
+    </xsl:template>
 </xsl:stylesheet>
