@@ -87,18 +87,106 @@ uri = "<xsl:value-of select="($auth)/address/uri"/>"
 <xsl:value-of select="."/>
 </xsl:for-each>
 <!-- nothing else from front material -->
+      <xsl:apply-templates select="rfc/middle"/>
+      <xsl:apply-templates select="rfc/back"/>
     </xsl:template>	
 
     <xsl:template match="rfc/middle">
 {mainmatter}
+<xsl:apply-templates />
 </xsl:template>
 <xsl:template match="rfc/middle/section">
-	    # <xsl:value-of select="./@title"/>
 
-        <xsl:copy>
-            <xsl:apply-templates select="@* | node()" />
-        </xsl:copy>
+# <xsl:value-of select="./@title"/> {#<xsl:value-of select="./@anchor"/>}
+
+<xsl:apply-templates />
     </xsl:template>
+    <xsl:template match="rfc/middle/section/section">
+
+## <xsl:value-of select="./@title"/> {#<xsl:value-of select="./@anchor"/>}
+
+<xsl:apply-templates />
+    </xsl:template>
+<xsl:template match="rfc/middle/section/section/section">
+
+### <xsl:value-of select="./@title"/> {#<xsl:value-of select="./@anchor"/>}
+
+<xsl:apply-templates />
+    </xsl:template>
+<xsl:template match="rfc/middle/section/section/section/section">
+
+#### <xsl:value-of select="./@title"/> {#<xsl:value-of select="./@anchor"/>}
+
+<xsl:apply-templates />
+    </xsl:template>
+<xsl:template match="rfc/middle/section/section/section/section/section">
+
+##### <xsl:value-of select="./@title"/> {#<xsl:value-of select="./@anchor"/>}
+
+<xsl:apply-templates />
+    </xsl:template>
+<xsl:template match="rfc/middle/section/section/section/section/section/section">
+
+###### <xsl:value-of select="./@title"/> {#<xsl:value-of select="./@anchor"/>}
+
+<xsl:apply-templates />
+    </xsl:template>
+<xsl:template match="rfc/middle/section/section/section/section/section/section/section">
+
+####### <xsl:value-of select="./@title"/> {#<xsl:value-of select="./@anchor"/>}
+
+<xsl:apply-templates />
+    </xsl:template>
+
+    <xsl:template match="//xref"> (#<xsl:value-of select="./@target"/>)</xsl:template>
+
+    <!-- no nested list yet -->
+    <xsl:template match="//list">
+	                    <xsl:choose>
+				    <xsl:when test="not(./@style)">
+*  <xsl:apply-templates /> </xsl:when>
+				    <!-- not supported in mmark -->
+				    <xsl:when test="./@style='hanging'">
+*  <xsl:apply-templates /> </xsl:when>
+				    <xsl:when test="./@style='letters'">
+a)  <xsl:apply-templates /> </xsl:when>
+				    <xsl:when test="./@style='numbers'">
+1.  <xsl:apply-templates /> </xsl:when>
+				    <xsl:when test="./@style='symbols'">
+*  <xsl:apply-templates /> </xsl:when>
+					    <!-- not supported:-->
+				    <xsl:when test="./@style='format'">
+*  <xsl:apply-templates /> </xsl:when>
+		</xsl:choose>
+    </xsl:template>
+
+    <xsl:template match="list/t"><xsl:apply-templates /></xsl:template>
+
+<xsl:template match="t">
+
+<xsl:apply-templates />
+    </xsl:template>
+
+    <xsl:template match="t//*">
+	        <xsl:copy>
+			      <xsl:copy-of select="@*" /><xsl:apply-templates /></xsl:copy>
+				</xsl:template>
+
+<!-- override rule: <link> nodes get special treatment -->
+  <xsl:template match="description//link">
+	      <a href="#{@ref}">
+		            <xsl:apply-templates />
+			        </a>
+				  </xsl:template>
+
+				    <!-- default rule: ignore any unspecific text node -->
+				      <xsl:template match="text()" />
+
+				        <!-- override rule: copy any text node beneath t -->
+					<xsl:template match="t//text()"><xsl:copy-of select="normalize-space(.)" /></xsl:template>
+
+
+
     <xsl:template match="rfc/back">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()" />
