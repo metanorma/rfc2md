@@ -114,14 +114,14 @@ are not ordered:
 
 <li>This is the second item. Here comes a sub-list:
 
-</t><ul>
+<ul>
 
 <li>This is the first sub-item.</li>
 
 <li><t>This is the second sub-item</t><t>
 and some more detail on the second sub-item.</t></li>
 
-</ul><t></li>
+</ul></li>
 
 <li>This is the item after the sub-list.</li>
 
@@ -134,19 +134,19 @@ and some more detail on the second sub-item.</t></li>
 <li>This is the first item.</li>
 
 <li>This is the second item. Here comes a sub-list, but
-with letters:
+with letters:</li>
 
-</t><ol style='a'>
+<ol style='a'>
 
 <li>This is the first sub-item.</li>
 
 <li>This is the second sub-item</li>
 
-</ol><t></li>
+</ol>
 
 <li>This is the item after the sub-list.</li>
 
-</ol><t></t>
+</ol>
 
 <t>And an example of hanging indent.
 
@@ -166,6 +166,22 @@ with letters:
 
 </ol><t></t>
 
+</section>
+
+<section><name>Nested Section</name>
+
+<t>another section</t>
+
+<section><name>First Subsection</name>
+
+<t>some text</t>
+
+<section><name>First Subsubsection</name>
+
+<t>some text</t>
+
+</section>
+</section>
 </section>
 
 <section><name>Figures</name>
