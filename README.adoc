@@ -13,3 +13,4 @@ rfc2md draft-my-document.xml draft-my-document.md
 
 `setenv SGML_CATALOG_FILES /Users/nickn/Documents/Arbeit/upwork/ribose/rfc2md/external/sgml_catalogue_files.xml
 
+`xsltproc --catalogs  rfc2md.xslt rfcV2.xml
