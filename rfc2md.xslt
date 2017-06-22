@@ -9,8 +9,9 @@
     xmlns:l="urn:local"
     exclude-result-prefixes="xsl date strings exsl l">
 
-	<xsl:output method="xml" encoding="utf-8" omit-xml-declaration="yes"/>
-	
+    <xsl:output method="text" encoding="utf-8" />
+    
+    
     <xsl:variable name="listMapping"> <!-- TODO -->
         <l:style>hanging</l:style><l:counter></l:counter>
         <l:style>letters</l:style><l:counter>a</l:counter>
@@ -132,54 +133,23 @@ date = <xsl:value-of select="rfc/front/date/@day"/>/<xsl:value-of select="rfc/fr
 </xsl:template>
 
     <xsl:template match="section">
-
+        <xsl:text>&#xa;</xsl:text>
         <xsl:call-template name="sectionMarkers">
             <xsl:with-param name="n" select="count(ancestor-or-self::section)" />
         </xsl:call-template>
         <xsl:text> </xsl:text>
         <!-- TODO my example uses name element rather than title attribute, find better RFC example -->
-        <xsl:value-of select="@title | name"/> {#<xsl:value-of select="@anchor"/>}
-
+        <xsl:value-of select="@title | name"/>
+        <xsl:apply-templates select="@anchor" />
         <xsl:apply-templates />
     </xsl:template>
-<!--
-    <xsl:template match="rfc/middle/section/section">
-
-## <xsl:value-of select="./@title"/> {#<xsl:value-of select="./@anchor"/>}
-
-<xsl:apply-templates />
+    
+    <xsl:template match="@anchor" >
+        <xsl:text> {#</xsl:text>
+        <xsl:value-of select="." />
+        <xsl:text>}</xsl:text>
     </xsl:template>
-<xsl:template match="rfc/middle/section/section/section">
 
-### <xsl:value-of select="./@title"/> {#<xsl:value-of select="./@anchor"/>}
-
-<xsl:apply-templates />
-    </xsl:template>
-<xsl:template match="rfc/middle/section/section/section/section">
-
-#### <xsl:value-of select="./@title"/> {#<xsl:value-of select="./@anchor"/>}
-
-<xsl:apply-templates />
-    </xsl:template>
-<xsl:template match="rfc/middle/section/section/section/section/section">
-
-##### <xsl:value-of select="./@title"/> {#<xsl:value-of select="./@anchor"/>}
-
-<xsl:apply-templates />
-    </xsl:template>
-<xsl:template match="rfc/middle/section/section/section/section/section/section">
-
-###### <xsl:value-of select="./@title"/> {#<xsl:value-of select="./@anchor"/>}
-
-<xsl:apply-templates />
-    </xsl:template>
-<xsl:template match="rfc/middle/section/section/section/section/section/section/section">
-
-####### <xsl:value-of select="./@title"/> {#<xsl:value-of select="./@anchor"/>}
-
-<xsl:apply-templates />
-    </xsl:template>
--->
     <xsl:template match="//xref"> (#<xsl:value-of select="./@target"/>)</xsl:template>
 
  
@@ -466,7 +436,6 @@ date = <xsl:value-of select="rfc/front/date/@day"/>/<xsl:value-of select="rfc/fr
 		</xsl:choose>
     </xsl:template>
 
- 
     <!-- inlist is t+ -->
     <xsl:template name="inlist">
         <xsl:param name="listprefix" />
@@ -476,33 +445,62 @@ date = <xsl:value-of select="rfc/front/date/@day"/>/<xsl:value-of select="rfc/fr
 <xsl:text>
 </xsl:text>
     </xsl:template>
+
     <xsl:template match="t">
-<xsl:text>
-</xsl:text>
-<xsl:text>
-</xsl:text>
+        <xsl:text>&#xa;</xsl:text>
         <xsl:apply-templates />
-<xsl:text>
-</xsl:text>
+        <xsl:text>&#xa;</xsl:text>
     </xsl:template>
+
+    <!--
     <xsl:template match="t//*">
         <xsl:copy>
             <xsl:copy-of select="@*" />
             <xsl:apply-templates />
         </xsl:copy>
+    </xsl:template> -->
+
+    <xsl:template match="eref">
+        <xsl:text>[</xsl:text>
+        <xsl:value-of select="." />
+        <xsl:text>](</xsl:text>
+        <xsl:value-of select="@target" />
+        <xsl:text>)</xsl:text>
     </xsl:template>
+ 
+    <xsl:template match="em">
+        <xsl:text>*</xsl:text>
+        <xsl:value-of select="." />
+        <xsl:text>*</xsl:text>
+    </xsl:template>
+    
+    <xsl:template match="strong">
+        <xsl:text>**</xsl:text>
+        <xsl:value-of select="." />
+        <xsl:text>**</xsl:text>
+    </xsl:template>
+    
+    <xsl:template match="tt">
+        <xsl:text>`</xsl:text>
+        <xsl:value-of select="." />
+        <xsl:text>`</xsl:text>
+    </xsl:template>
+
     <!-- override rule: <link> nodes get special treatment -->
     <xsl:template match="description//link">
         <a href="#{@ref}">
             <xsl:apply-templates />
         </a>
     </xsl:template>
+
     <!-- default rule: ignore any unspecific text node -->
     <xsl:template match="text()" />
+
     <!-- override rule: copy any text node beneath t -->
     <xsl:template match="t//text()">
-        <xsl:copy-of select="normalize-space(.)" />
+        <xsl:copy-of select="." />
     </xsl:template>
+
     <xsl:template match="rfc/back">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()" />
@@ -545,9 +543,11 @@ date = <xsl:value-of select="rfc/front/date/@day"/>/<xsl:value-of select="rfc/fr
         <xsl:apply-templates select="@*|node()"/>
 </xsl:copy>
   </xsl:template>
+
   <xsl:template match="reference//node()">
      <xsl:copy>
         <xsl:apply-templates select="@*|node()"/>
      </xsl:copy>
   </xsl:template>
+
 </xsl:stylesheet>
