@@ -39,18 +39,40 @@
         </xsl:for-each>
 	</xsl:template>
 	
-	<xsl:template name="sectionMarkers">
-        <xsl:param name="n"/>
-
+    <xsl:template name="repeat">
+        <xsl:param name="n" />
+        <xsl:param name="character" />
+        
         <xsl:if test="$n > 0">
-            <xsl:call-template name="sectionMarkers">
-                <xsl:with-param name="n" select="$n - 1"/>
+            <xsl:call-template name="repeat">
+                <xsl:with-param name="n" select="$n - 1" />
+                <xsl:with-param name="character" select="$character" />
             </xsl:call-template>
-            <xsl:text>#</xsl:text>
+            <xsl:value-of select="$character" />
         </xsl:if>
 
     </xsl:template>
-
+    
+    <xsl:template name="makeCounter">
+        <xsl:param name="style" />
+        <xsl:param name="position" />
+        
+        <xsl:message>makeCounter: style=<xsl:value-of select="$style"/>, position=<xsl:value-of select="$position"/>
+        </xsl:message>
+        <xsl:choose>
+            <xsl:when test="$style = 'letters'">
+                <xsl:number value="$position" format="a" />
+                <xsl:text>) </xsl:text>
+            </xsl:when>
+            <xsl:when test="$style = 'numbers'">
+                <xsl:number value="$position" format="1" />
+                <xsl:text>. </xsl:text>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:text>* </xsl:text>
+            </xsl:otherwise>
+        </xsl:choose>
+    </xsl:template>
 
     <xsl:variable name="areas">
         <xsl:call-template name="commafy">
@@ -134,11 +156,11 @@ date = <xsl:value-of select="rfc/front/date/@day"/>/<xsl:value-of select="rfc/fr
 
     <xsl:template match="section">
         <xsl:text>&#xa;</xsl:text>
-        <xsl:call-template name="sectionMarkers">
+        <xsl:call-template name="repeat">
             <xsl:with-param name="n" select="count(ancestor-or-self::section)" />
+            <xsl:with-param name="character" select="'#'" />
         </xsl:call-template>
         <xsl:text> </xsl:text>
-        <!-- TODO my example uses name element rather than title attribute, find better RFC example -->
         <xsl:value-of select="@title | name"/>
         <xsl:apply-templates select="@anchor" />
         <xsl:apply-templates />
@@ -152,299 +174,11 @@ date = <xsl:value-of select="rfc/front/date/@day"/>/<xsl:value-of select="rfc/fr
 
     <xsl:template match="//xref"> (#<xsl:value-of select="./@target"/>)</xsl:template>
 
- 
-<xsl:template match="//list">
-<xsl:text>
-</xsl:text>
-	<xsl:choose>
-		<xsl:when test="not(./@style)">
-			<xsl:for-each select="t">
-				<xsl:call-template name="inlist">
-		            <xsl:with-param name="listprefix">* </xsl:with-param>
-	            </xsl:call-template>
-	        </xsl:for-each>
-        </xsl:when>
-				    <!-- not supported in mmark -->
-				    <xsl:when test="./@style='hanging'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">* </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='letters'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">a) </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='numbers'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">1. </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='symbols'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">* </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-					    <!-- not supported:-->
-				    <xsl:when test="./@style='format'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">* </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:otherwise>
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">* </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:otherwise>
-		</xsl:choose>
-    </xsl:template>
-    
-        <xsl:template match="//list/t/list">
-<xsl:text>
-</xsl:text>
-	                    <xsl:choose>
-				    <xsl:when test="not(./@style)">
-		<xsl:for-each select="t">
-					    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">  * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <!-- not supported in mmark -->
-				    <xsl:when test="./@style='hanging'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">  * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='letters'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">  a) </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='numbers'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">  1. </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='symbols'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">  * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-					    <!-- not supported:-->
-				    <xsl:when test="./@style='format'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">  * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:otherwise>
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">  * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:otherwise>
-		</xsl:choose>
+
+    <xsl:template match="list">
+        <xsl:apply-templates />
     </xsl:template>
 
-        <xsl:template match="//list/t/list/t/list">
-<xsl:text>
-</xsl:text>
-	                    <xsl:choose>
-				    <xsl:when test="not(./@style)">
-		<xsl:for-each select="t">
-					    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">    * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <!-- not supported in mmark -->
-				    <xsl:when test="./@style='hanging'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">    * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='letters'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">    a) </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='numbers'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">    1. </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='symbols'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">    * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-					    <!-- not supported:-->
-				    <xsl:when test="./@style='format'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">    * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:otherwise>
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">    * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:otherwise>
-		</xsl:choose>
-    </xsl:template>
-
-        <xsl:template match="//list/t/list/t/list/t/list">
-<xsl:text>
-</xsl:text>
-	                    <xsl:choose>
-				    <xsl:when test="not(./@style)">
-		<xsl:for-each select="t">
-					    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">      * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <!-- not supported in mmark -->
-				    <xsl:when test="./@style='hanging'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">      * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='letters'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">      a) </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='numbers'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">      1. </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='symbols'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">      * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-					    <!-- not supported:-->
-				    <xsl:when test="./@style='format'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">      * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:otherwise>
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">      * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:otherwise>
-		</xsl:choose>
-    </xsl:template>
-
-        <xsl:template match="//list/t/list/t/list/t/list/t/list">
-<xsl:text>
-</xsl:text>
-	                    <xsl:choose>
-				    <xsl:when test="not(./@style)">
-		<xsl:for-each select="t">
-					    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">        * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <!-- not supported in mmark -->
-				    <xsl:when test="./@style='hanging'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">        * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='letters'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">        a) </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='numbers'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">        1. </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-				    <xsl:when test="./@style='symbols'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">        * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-					    <!-- not supported:-->
-				    <xsl:when test="./@style='format'">
-		<xsl:for-each select="t">
-	    <xsl:call-template name="inlist">
-		    <xsl:with-param name="listprefix">        * </xsl:with-param>
-	</xsl:call-template>
-	</xsl:for-each>
-</xsl:when>
-		</xsl:choose>
-    </xsl:template>
-
-    <!-- inlist is t+ -->
-    <xsl:template name="inlist">
-        <xsl:param name="listprefix" />
-<xsl:text>
-</xsl:text>
-        <xsl:value-of select="$listprefix" /> <xsl:apply-templates />
-<xsl:text>
-</xsl:text>
-    </xsl:template>
 
     <xsl:template match="t">
         <xsl:text>&#xa;</xsl:text>
@@ -452,6 +186,28 @@ date = <xsl:value-of select="rfc/front/date/@day"/>/<xsl:value-of select="rfc/fr
         <xsl:text>&#xa;</xsl:text>
     </xsl:template>
 
+    <xsl:template match="t[parent::list]">
+<!--        <xsl:message>
+            <xsl:for-each select="ancestor-or-self::*">
+                <xsl:value-of select="name(.)"/> /
+            </xsl:for-each>
+        </xsl:message> -->
+
+        <xsl:call-template name="repeat">
+            <xsl:with-param name="n" select="count(ancestor::list) * 4" />
+            <xsl:with-param name="character" select="' '" />
+        </xsl:call-template>
+
+        <xsl:call-template name="makeCounter">
+            <xsl:with-param name="style" select="parent::list/@style" />
+            <xsl:with-param name="position" select="count(preceding-sibling::t) + 1" />
+        </xsl:call-template>
+        
+        <xsl:value-of select="."/>
+        
+        <xsl:apply-templates select="list" />
+    </xsl:template>
+    
     <!--
     <xsl:template match="t//*">
         <xsl:copy>
