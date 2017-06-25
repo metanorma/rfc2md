@@ -16,3 +16,8 @@ To run the transformation:
 `setenv SGML_CATALOG_FILES /Users/nickn/Documents/Arbeit/upwork/ribose/rfc2md/external/sgml_catalogue_files.xml
 
 `xsltproc --catalogs  rfc2md.xslt rfcV2.xml
+
+If run with `--stringparam draft "final"` , leave out crefs.
+
+`xsltproc --catalogs  rfc2md.xslt rfcV2.xml
+`xsltproc --stringparam draft "final" --catalogs  rfc2md.xslt rfcV2.xml
