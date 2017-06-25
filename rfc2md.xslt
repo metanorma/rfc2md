@@ -373,16 +373,86 @@ Figure: <xsl:number format="1" level="any" count="figure"/>
 
 	      <xsl:if test="string-length($pText)">
 F&gt; line: <xsl:text/>
-			    <xsl:value-of select=
-				       "substring-before(concat($pText, '&#xA;'), '&#xA;')"/>
+		     <xsl:value-of select="substring-before(concat($pText, '&#xA;'), '&#xA;')"/>
+		     <xsl:call-template name="artworkprefix">
+				<xsl:with-param name="pText" select="substring-after($pText, '&#xA;')"/>
+			 </xsl:call-template>
+	      </xsl:if>
+  </xsl:template>
 
-			          <xsl:call-template name="artworkprefix">
-					      <xsl:with-param name="pText" select=
-						           "substring-after($pText, '&#xA;')"/>
-						      </xsl:call-template>
-	        </xsl:if>
+  <xsl:template match="//texttable">
+	  <xsl:text>&#xa;</xsl:text>
+     <xsl:variable name="colcount" select="count(ttcol)"/>
+     <xsl:if test="@anchor and  string-length(@anchor)!=0">
+<xsl:apply-templates select="@anchor" />
+     </xsl:if>
+     <xsl:apply-templates select="./preamble"/>
+     <xsl:for-each select="ttcol">
+	     <xsl:call-template name="tableheader">
+		     <xsl:with-param name="lastnode" select="position()=last()"/>
+	     </xsl:call-template>
+     </xsl:for-each>
+     <xsl:for-each select="ttcol">
+	     <xsl:call-template name="separator">
+		     <xsl:with-param name="lastnode" select="position()=last()"/>
+	     </xsl:call-template>
+     </xsl:for-each>
+     <xsl:for-each select="c">
+     <xsl:call-template name="table-c">
+         <xsl:with-param name="colcount" select="$colcount"/>
+ </xsl:call-template>
+ </xsl:for-each>
+     <xsl:apply-templates select="./postamble"/>
+	  <xsl:choose>
+		  <xsl:when test="@title and string-length(@title)!=0">
+Table: <xsl:value-of select="@title"/>
+<xsl:text>&#xa;</xsl:text>
+	  </xsl:when>
+	  <xsl:when test="@suppress-title = 'true'">
+	  </xsl:when>
+	  <xsl:otherwise>
+Table: <xsl:number format="1" level="any" count="texttable"/>
+<xsl:text>&#xa;</xsl:text>
+	  </xsl:otherwise>
+	  </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template match="ttcol" name="tableheader">
+	  <xsl:param name="lastnode"/>
+<xsl:value-of select="."/> 
+<xsl:choose>
+	<xsl:when test="not($lastnode)"> | </xsl:when>
+	<xsl:otherwise><xsl:text>&#xA;</xsl:text></xsl:otherwise>
+</xsl:choose>
+  </xsl:template>
+  
+  <xsl:template match="/ttcol" name="separator">
+	  <xsl:param name="lastnode"/>
+<xsl:choose>
+	<xsl:when test="@align = 'left'">:---</xsl:when>
+	<xsl:when test="@align = 'center'">:--:</xsl:when>
+	<xsl:when test="@align = 'right'">---:</xsl:when>
+	<xsl:otherwise>----</xsl:otherwise>
+</xsl:choose>
+<xsl:choose>
+	<xsl:when test="not($lastnode)">|</xsl:when>
+	<xsl:otherwise><xsl:text>&#xA;</xsl:text></xsl:otherwise>
+</xsl:choose>
+  </xsl:template>
+  
+  <xsl:template match="/c" name="table-c">
+	  <xsl:param name="colcount"/>
+      <xsl:apply-templates />
+      <xsl:choose>
+      <xsl:when test="position() mod $colcount = 0">
+        <xsl:text>&#xA;</xsl:text>
+      </xsl:when>
+      <xsl:when test="position()=last()"> </xsl:when>
+      <xsl:otherwise> | </xsl:otherwise>
+      </xsl:choose>
+  </xsl:template>
 
-      </xsl:template>
 
+  <xsl:template match="c//text()"><xsl:copy-of select="." /></xsl:template>
 
 </xsl:stylesheet>
