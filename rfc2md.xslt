@@ -92,7 +92,71 @@
         <xsl:call-template name="commafy">
             <xsl:with-param name="nodes" select="rfc/front/keyword" />
         </xsl:call-template>
-</xsl:variable>
+    </xsl:variable>
+    
+    <xsl:template name="dateconvert">
+        <xsl:param name="day" />
+        <xsl:param name="month" />
+        <xsl:param name="year" />
+
+        <!-- now print them out. Pad with 0 where necessary. -->
+        <xsl:value-of select="$year" />
+<xsl:choose>
+  <xsl:when test="$month = 'January'">
+   <xsl:value-of select="'-01'"/>
+  </xsl:when>
+  <xsl:when test="$month = 'February'">
+   <xsl:value-of select="'-02'"/>
+  </xsl:when>
+  <xsl:when test="$month = 'March'">
+   <xsl:value-of select="'-03'"/>
+  </xsl:when>
+  <xsl:when test="$month = 'April'">
+   <xsl:value-of select="'-04'"/>
+  </xsl:when>
+  <xsl:when test="$month = 'May'">
+   <xsl:value-of select="'-05'"/>
+  </xsl:when>
+  <xsl:when test="$month = 'June'">
+   <xsl:value-of select="'-06'"/>
+  </xsl:when>
+  <xsl:when test="$month = 'July'">
+   <xsl:value-of select="'-07'"/>
+  </xsl:when>
+  <xsl:when test="$month = 'August'">
+   <xsl:value-of select="'-08'"/>
+  </xsl:when>
+  <xsl:when test="$month = 'September'">
+   <xsl:value-of select="'-09'"/>
+  </xsl:when>
+  <xsl:when test="$month = 'October'">
+   <xsl:value-of select="'-10'"/>
+  </xsl:when>
+  <xsl:when test="$month = 'November'">
+   <xsl:value-of select="'-11'"/>
+  </xsl:when>
+  <xsl:when test="$month = 'December'">
+   <xsl:value-of select="'-12'"/>
+  </xsl:when>
+  <xsl:otherwise>
+   <xsl:value-of select="'-01'"/>
+  </xsl:otherwise>
+ </xsl:choose>        
+        <xsl:value-of select="'-'" />
+        <xsl:choose>
+        <xsl:when test="string-length($day) = 0">
+            <xsl:value-of select="'01'" />
+        </xsl:when>
+        <xsl:when test="string-length($day) = 1">
+            <xsl:value-of select="'0'" />
+            <xsl:value-of select="$day" />
+        </xsl:when>
+        <xsl:otherwise>
+        <xsl:value-of select="$day" />
+        </xsl:otherwise>
+        </xsl:choose>
+        <xsl:value-of select="'T00:00:00Z'"/>
+        </xsl:template>
 
 	<xsl:variable name="listprefix" />
 	<xsl:template name="author">
@@ -124,13 +188,17 @@ title = "<xsl:value-of select="normalize-space(rfc/front/title)"/>"
 abbrev = "<xsl:value-of select="rfc/title/@abbrev"/>"
 category = "<xsl:value-of select="rfc/@category"/>"
 docName = "<xsl:value-of select="rfc/@docName"/>"
-updates = <xsl:value-of select="rfc/@updates"/>
-obsoletes = <xsl:value-of select="rfc/@obsoletes"/>
+updates = [<xsl:value-of select="rfc/@updates"/>]
+obsoletes = [<xsl:value-of select="rfc/@obsoletes"/>]
 ipr = "<xsl:value-of select="rfc/@ipr"/>"
-area =  [<xsl:value-of select="$areas"/>]
-workgroup = [<xsl:value-of select="$workgroups"/>]
+area =  <xsl:value-of select="$areas"/>
+workgroup = <xsl:value-of select="$workgroups"/>
 keyword =  [<xsl:value-of select="$keywords"/>]
-date = <xsl:value-of select="rfc/front/date/@day"/><xsl:if test="rfc/front/date/@day and  string-length(rfc/front/date/@day)!=0">/</xsl:if><xsl:value-of select="rfc/front/date/@month"/><xsl:if test="rfc/front/date/@month and  string-length(rfc/front/date/@month)!=0">/</xsl:if><xsl:value-of select="rfc/front/date/@year"/>
+date = <xsl:call-template name="dateconvert">
+	<xsl:with-param name="day" select="rfc/front/date/@day"/>
+	<xsl:with-param name="month" select="rfc/front/date/@month"/>
+	<xsl:with-param name="year" select="rfc/front/date/@year"/>
+</xsl:call-template>
 
     <xsl:for-each select="rfc/front/author">
 	    <xsl:call-template name="author">
@@ -378,7 +446,7 @@ date = <xsl:value-of select="rfc/front/date/@day"/><xsl:if test="rfc/front/date/
 		  <xsl:when test="$draft='final'">
 	  </xsl:when>
 	  <xsl:otherwise>
-A&gt; <xsl:value-of select="@source"/>: <xsl:value-of select="." />
+&lt;!-- <xsl:value-of select="@source"/> -- <xsl:value-of select="normalize-space(.)" /> --&gt;
 	  </xsl:otherwise>
   </xsl:choose>
   </xsl:template>
@@ -393,8 +461,7 @@ A&gt; <xsl:value-of select="@source"/>: <xsl:value-of select="." />
 {{<xsl:value-of select="./artwork/@src"/>}}
 	     </xsl:when>
 	     <xsl:otherwise>
-F&gt; ~~~~~
-<xsl:apply-templates select="./artwork"/>
+F&gt; ~~~~~ <xsl:apply-templates select="./artwork"/>
 F&gt; ~~~~~
 	     </xsl:otherwise>
      </xsl:choose>
