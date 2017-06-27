@@ -130,7 +130,7 @@ ipr = "<xsl:value-of select="rfc/@ipr"/>"
 area =  [<xsl:value-of select="$areas"/>]
 workgroup = [<xsl:value-of select="$workgroups"/>]
 keyword =  [<xsl:value-of select="$keywords"/>]
-date = <xsl:value-of select="rfc/front/date/@day"/>/<xsl:value-of select="rfc/front/date/@month"/>/<xsl:value-of select="rfc/front/date/@year"/>
+date = <xsl:value-of select="rfc/front/date/@day"/><xsl:if test="rfc/front/date/@day and  string-length(rfc/front/date/@day)!=0">/</xsl:if><xsl:value-of select="rfc/front/date/@month"/><xsl:if test="rfc/front/date/@month and  string-length(rfc/front/date/@month)!=0">/</xsl:if><xsl:value-of select="rfc/front/date/@year"/>
 
     <xsl:for-each select="rfc/front/author">
 	    <xsl:call-template name="author">
@@ -143,7 +143,8 @@ date = <xsl:value-of select="rfc/front/date/@day"/>/<xsl:value-of select="rfc/fr
 <xsl:value-of select="rfc/front/abstract"/>
 
     <xsl:for-each select="rfc/front/note">
-.# Note
+.# <xsl:value-of select="@title"/>
+        <xsl:text>&#xa;</xsl:text>
 <xsl:value-of select="."/>
 </xsl:for-each>
 <!-- nothing else from front material -->
@@ -239,10 +240,28 @@ date = <xsl:value-of select="rfc/front/date/@day"/>/<xsl:value-of select="rfc/fr
         <xsl:text>*</xsl:text>
     </xsl:template>
     
+    <xsl:template match="spanx">
+        <xsl:text>*</xsl:text>
+        <xsl:value-of select="." />
+        <xsl:text>*</xsl:text>
+    </xsl:template>
+
+    <xsl:template match="spanx[@size='emph']">
+        <xsl:text>*</xsl:text>
+        <xsl:value-of select="." />
+        <xsl:text>*</xsl:text>
+    </xsl:template>
+    
     <xsl:template match="strong">
         <xsl:text>**</xsl:text>
         <xsl:value-of select="." />
         <xsl:text>**</xsl:text>
+    </xsl:template>
+    
+    <xsl:template match="spanx[@size='strong']">
+        <xsl:text>*</xsl:text>
+        <xsl:value-of select="." />
+        <xsl:text>*</xsl:text>
     </xsl:template>
     
     <xsl:template match="tt">
@@ -250,6 +269,32 @@ date = <xsl:value-of select="rfc/front/date/@day"/>/<xsl:value-of select="rfc/fr
         <xsl:value-of select="." />
         <xsl:text>`</xsl:text>
     </xsl:template>
+
+    <xsl:template match="spanx[@size='verb']">
+        <xsl:text>*</xsl:text>
+        <xsl:value-of select="." />
+        <xsl:text>*</xsl:text>
+    </xsl:template>
+    
+    <xsl:template match="vspace">
+    <xsl:text>&#xa;</xsl:text>
+    </xsl:template>
+
+    <xsl:template match="vspace[@blankLines]">
+    <xsl:call-template name="blankLines">
+	<xsl:with-param name="n" select="@blankLines"/>
+    </xsl:call-template>
+    </xsl:template>
+
+	<xsl:template name="blankLines">
+		<xsl:param name="n"/>
+		<xsl:text>&#xa;</xsl:text>
+		<xsl:if test="$n > 0">
+			<xsl:call-template  name="blankLines">
+				<xsl:with-param name="n" select="$n - 1"/>
+			</xsl:call-template>
+		</xsl:if>
+	</xsl:template>
 
     <!-- override rule: <link> nodes get special treatment -->
     <xsl:template match="description//link">
