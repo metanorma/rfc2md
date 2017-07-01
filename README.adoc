@@ -4,22 +4,27 @@ XSLT conversion from RFC XML v2/v3 to MMark.
 
 = Usage
 
-[[app-listing]]
 [source,sh]
 ----
 rfc2md draft-my-document.xml draft-my-document.md
 ----
 
-
 To run the transformation:
 
-`setenv SGML_CATALOG_FILES /Users/nickn/Documents/Arbeit/upwork/ribose/rfc2md/external/sgml_catalogue_files.xml
+[source,sh]
+----
+setenv SGML_CATALOG_FILES $HOME/rfc2md/external/sgml_catalogue_files.xml
+----
 
-If run with `--stringparam draft "final"` , leave out crefs.
+If run with `--stringparam draft "final"`, leave out `crefs`.
 
-`xsltproc --catalogs  rfc2md.xslt rfcV2.xml
-`xsltproc --stringparam draft "final" --catalogs  rfc2md.xslt rfcV2.xml
+[source,sh]
+----
+xsltproc --catalogs  rfc2md.xslt rfcV2.xml
+xsltproc --stringparam draft "final" --catalogs  rfc2md.xslt rfcV2.xml
+----
 
 = Status 
 
-RFC XML v2 code tested and roundtripped with https://github.com/miekg/mmark . Mmark appears to be buggy in handling of XML references and comments as crefs.
+RFC XML v2 code tested and roundtripped with https://github.com/miekg/mmark .
+Mmark appears to be buggy in handling of XML references and comments as crefs.
