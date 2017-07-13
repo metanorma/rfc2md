@@ -60,7 +60,6 @@ date = <xsl:call-template name="dateconvert">
     </xsl:call-template>
 
         <xsl:apply-templates />
-%%%
     </xsl:template>
 
 
@@ -107,7 +106,9 @@ uri = "<xsl:value-of select="uri"/>"
 
 
     <xsl:template match="front">
-        <xsl:apply-templates />
+        <xsl:apply-templates select="author"/>
+        <xsl:text>&#xa;%%%&#xa;</xsl:text>
+        <xsl:apply-templates select="*[not(local-name()='author')]" />
     </xsl:template>
     
 
@@ -234,6 +235,15 @@ uri = "<xsl:value-of select="uri"/>"
         <xsl:value-of select="." />
         <xsl:text>`</xsl:text>
     </xsl:template>
+    
+    <!-- TODO: handle case where the block quote has embedded newlines 
+        or multiple t tags -->
+    <xsl:template match="blockquote">
+        <xsl:text>&#xa;&gt; </xsl:text>
+        <xsl:apply-templates />
+        <xsl:text>&#xa;</xsl:text>
+    </xsl:template>
+    
 
     <xsl:template match="vspace">
         <xsl:text>&#xa;</xsl:text>
@@ -255,7 +265,7 @@ uri = "<xsl:value-of select="uri"/>"
     <xsl:template match="back">
         <xsl:apply-templates />
 
-        <xsl:text>{backmatter}</xsl:text>
+        <xsl:text>&#xa;{backmatter}&#xa;</xsl:text>
     </xsl:template>
     
     <xsl:template match="references">
@@ -325,6 +335,7 @@ uri = "<xsl:value-of select="uri"/>"
                 <xsl:apply-templates />
             </xsl:otherwise>
         </xsl:choose>
+        <xsl:text>F&gt; ~~~~&#xa;</xsl:text>
     </xsl:template>
     
     <xsl:template match="@src">

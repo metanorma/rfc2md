@@ -22,7 +22,6 @@ An Example of Using XML for an Internet Draft
 <country>US</country>
 </postal>
 <phone>+1 123-456-7890</phone>
-+1 123-456-7890
 <email>chrissmith@example.com</email>
 <uri>http://www.example.com/corporate/</uri>
 </address>
@@ -93,6 +92,8 @@ Actually, the reference itself is not all that interesting, but the
 way that the reference is incorporated is. Note that the inclusion
 of RFC 2119 was done at the top of the XML, while the information
 for RFC 6949 is done directly in the references section.</t>
+
+<blockquote>This is a <em>paragraph</em> that is a block quote.</blockquote>
 
 <t>The <eref target='http://www.ietf.org'>IETF web site</eref> is
 <em>quite</em>
