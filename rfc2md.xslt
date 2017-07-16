@@ -236,12 +236,18 @@ uri = "<xsl:value-of select="uri"/>"
         <xsl:text>`</xsl:text>
     </xsl:template>
     
-    <!-- TODO: handle case where the block quote has embedded newlines 
-        or multiple t tags -->
     <xsl:template match="blockquote">
-        <xsl:text>&#xa;&gt; </xsl:text>
         <xsl:apply-templates />
         <xsl:text>&#xa;</xsl:text>
+        <xsl:variable name="text">
+            <xsl:apply-templates />
+        </xsl:variable>
+        
+        <xsl:for-each select="str:split($text, '&#xa;')">
+            <xsl:text>&gt; </xsl:text>
+            <xsl:value-of select="." />
+            <xsl:text>&#xa;</xsl:text>
+        </xsl:for-each>
     </xsl:template>
     
 
