@@ -125,7 +125,7 @@ uri = "<xsl:value-of select="uri"/>"
     </xsl:template>
     
     <xsl:template match="middle">
-        <xsl:text>{mainmatter}</xsl:text>
+        <xsl:text>&#xa;{mainmatter}&#xa;</xsl:text>
         <xsl:apply-templates />
     </xsl:template>
 
@@ -136,6 +136,7 @@ uri = "<xsl:value-of select="uri"/>"
         <xsl:text> </xsl:text>
         <xsl:value-of select="@title | name"/>
         <xsl:apply-templates select="@anchor" />
+        <xsl:text>&#xa;</xsl:text>
         <xsl:apply-templates />
     </xsl:template>
     
@@ -150,7 +151,6 @@ uri = "<xsl:value-of select="uri"/>"
 
     <xsl:template match="//xref"> (#<xsl:value-of select="./@target"/>)</xsl:template>
     <!-- Not bothering with differentiation between format attribute values -->
-
 
     <xsl:template match="list">
         <xsl:apply-templates />
@@ -181,7 +181,7 @@ uri = "<xsl:value-of select="uri"/>"
     <xsl:template match="dd">
         <xsl:text>&#xa;: </xsl:text>
         <xsl:apply-templates />
-        <xsl:text>&#xa;</xsl:text>
+        <xsl:text>&#xa;&#xa;</xsl:text>
     </xsl:template>
 
     <xsl:template match="li">
@@ -236,11 +236,28 @@ uri = "<xsl:value-of select="uri"/>"
         <xsl:text>`</xsl:text>
     </xsl:template>
     
-    <xsl:template match="blockquote">
+    <!-- This is how it's handled in standard markdown, not Github-flavored markdown -->
+    <xsl:template match="br">
+        <xsl:text>  &#xa;</xsl:text> <!-- Two spaces followed by newline -->
         <xsl:apply-templates />
+    </xsl:template>
+    
+    <xsl:template match="sub">
+        <xsl:text>~</xsl:text>
+        <xsl:apply-templates />
+        <xsl:text>~</xsl:text>
+    </xsl:template>
+    
+    <xsl:template match="sup">
+        <xsl:text>^</xsl:text>
+        <xsl:apply-templates />
+        <xsl:text>^</xsl:text>
+    </xsl:template>
+    
+    <xsl:template match="blockquote">
         <xsl:text>&#xa;</xsl:text>
-        <xsl:variable name="text">
-            <xsl:apply-templates />
+        <xsl:variable name="text"> <!-- process all the child nodes into text so we can -->
+            <xsl:apply-templates /><!-- postprocess them and add block quote markdown -->
         </xsl:variable>
         
         <xsl:for-each select="str:split($text, '&#xa;')">
@@ -451,6 +468,7 @@ Table: <xsl:number format="1" level="any" count="texttable"/>
             <xsl:value-of select="@title" />
             <xsl:text> }&#xa;</xsl:text>
         </xsl:if>
+        <xsl:text>&#xa;</xsl:text>
         <xsl:apply-templates />
     </xsl:template>
     
@@ -474,7 +492,7 @@ Table: <xsl:number format="1" level="any" count="texttable"/>
     </xsl:template>
 
     <xsl:template match="th" mode="alignment">
-        <xsl:text>-</xsl:text>
+        <xsl:text>---</xsl:text>
         <xsl:if test="position() != last()">
             <xsl:text>|</xsl:text>
         </xsl:if>
@@ -488,7 +506,7 @@ Table: <xsl:number format="1" level="any" count="texttable"/>
     </xsl:template>
 
     <xsl:template match="th[@align='center']" mode="alignment">
-        <xsl:text>:--:</xsl:text>
+        <xsl:text>:-:</xsl:text>
         <xsl:if test="position() != last()">
             <xsl:text>|</xsl:text>
         </xsl:if>

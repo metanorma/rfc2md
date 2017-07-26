@@ -19,21 +19,7 @@
             <xsl:if test="position() != last()">, </xsl:if>
         </xsl:for-each>
     </xsl:template>
-    
-<!--    <xsl:template name="repeat">
-        <xsl:param name="n" />
-        <xsl:param name="character" />
         
-        <xsl:if test="$n > 0">
-            <xsl:call-template name="repeat">
-                <xsl:with-param name="n" select="$n - 1" />
-                <xsl:with-param name="character" select="$character" />
-            </xsl:call-template>
-            <xsl:value-of select="$character" />
-        </xsl:if>
-
-    </xsl:template> -->
-    
     <xsl:template name="make-counter">
         <xsl:param name="style" />
         <xsl:param name="position" />
@@ -41,7 +27,7 @@
         <xsl:choose>
             <xsl:when test="$style = 'letters' or $style = 'a'">
                 <xsl:number value="$position" format="a" />
-                <xsl:text>) </xsl:text>
+                <xsl:text>)  </xsl:text> <!-- Need double space after alpha counters -->
             </xsl:when>
             <xsl:when test="$style = 'numbers' or $style = '1'">
                 <xsl:number value="$position" format="1" />
@@ -58,11 +44,7 @@
         <xsl:param name="counter-style" />
         <xsl:param name="item-number" />
         
-        <xsl:value-of select="str:padding($indent-level * 4, ' ')" />
-<!--        <xsl:call-template name="repeat">
-            <xsl:with-param name="n" select="$indent-level * 4" />
-            <xsl:with-param name="character" select="' '" />
-        </xsl:call-template> -->
+        <xsl:value-of select="str:padding(($indent-level - 1) * 4, ' ')" />
         
         <xsl:call-template name="make-counter">
             <xsl:with-param name="style" select="$counter-style" />
@@ -139,14 +121,9 @@
 
     <xsl:template name="blankLines">
         <xsl:param name="n"/>
-<!-- TODO: remove and just call str:padding directly -->
-        <xsl:value-of select="str:padding(n, '&#xa;')" />
-<!--        <xsl:text>&#xa;</xsl:text>
-        <xsl:if test="$n > 0">
-            <xsl:call-template  name="blankLines">
-                <xsl:with-param name="n" select="$n - 1"/>
-            </xsl:call-template>
-        </xsl:if> -->
+        <!-- TODO: remove and just call str:padding directly -->
+        <!-- NOTE: these are standard markdown compatible, two spaces followed by newline -->
+        <xsl:value-of select="str:padding(n, '   &#xa;')" />
     </xsl:template>
     
 
