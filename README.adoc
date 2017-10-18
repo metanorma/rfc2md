@@ -4,11 +4,6 @@ XSLT conversion from RFC XML v2/v3 to MMark.
 
 = Usage
 
-[source,sh]
-----
-rfc2md draft-my-document.xml draft-my-document.md
-----
-
 To run the transformation:
 
 [source,sh]

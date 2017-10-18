@@ -267,13 +267,6 @@ uri = "<xsl:value-of select="uri"/>"
         <xsl:apply-templates />
     </xsl:template>
     
-    <xsl:template match="list[@style='hanging']/t">
-        <xsl:value-of select="@hangText"/>
-        <xsl:text>&#xa;: </xsl:text>
-        <xsl:apply-templates />
-        <xsl:text>&#xa;&#xa;</xsl:text>
-    </xsl:template>
-    
     <xsl:template match="dd">
         <xsl:text>&#xa;: </xsl:text>
         <xsl:apply-templates />
@@ -301,7 +294,8 @@ uri = "<xsl:value-of select="uri"/>"
         <xsl:text>&#xa;: </xsl:text>
         <xsl:apply-templates />
         <xsl:text>&#xa;&#xa;</xsl:text>
-          </xsl:when>
+      </xsl:when>
+
           <xsl:otherwise>
         <xsl:call-template name="make-list-item">
             <xsl:with-param name="indent-level" select="count(ancestor::list)" />
@@ -462,7 +456,7 @@ uri = "<xsl:value-of select="uri"/>"
                 <xsl:apply-templates match="@src" />
             </xsl:when>
             <xsl:otherwise>
-                <xsl:apply-templates />
+              <!--<xsl:apply-templates />-->
             </xsl:otherwise>
         </xsl:choose>
         <xsl:text>F&gt; ~~~~&#xa;</xsl:text>

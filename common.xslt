@@ -23,7 +23,7 @@
     <xsl:template name="make-counter">
         <xsl:param name="style" />
         <xsl:param name="position" />
-        
+
         <xsl:choose>
             <xsl:when test="$style = 'letters' or $style = 'a'">
                 <xsl:number value="$position" format="a" />
@@ -44,6 +44,13 @@
         <xsl:param name="counter-style" />
         <xsl:param name="item-number" />
         
+        <!-- start of nested list: insert line -->
+        <xsl:choose>
+          <xsl:when test="$item-number=1">
+            <xsl:text>&#xa;</xsl:text>
+          </xsl:when>
+        </xsl:choose>
+
         <xsl:value-of select="str:padding(($indent-level - 1) * 4, ' ')" />
         
         <xsl:call-template name="make-counter">
