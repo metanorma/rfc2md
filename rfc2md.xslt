@@ -35,13 +35,14 @@
             <xsl:with-param name="nodes" select="/rfc/front/keyword" />
         </xsl:call-template>
     </xsl:variable>
-    
+    <!--    
     <xsl:template name="dateconvert">
         <xsl:param name="day" />
         <xsl:param name="month" />
         <xsl:param name="year" />
-
+-->
         <!-- now print them out. Pad with 0 where necessary. -->
+<!--
         <xsl:value-of select="$year" />
 <xsl:choose>
   <xsl:when test="$month = 'January'">
@@ -99,6 +100,7 @@
         </xsl:choose>
         <xsl:value-of select="'T00:00:00Z'"/>
         </xsl:template>
+-->
 
 	<xsl:variable name="listprefix" />
 	<xsl:template name="author">
@@ -265,6 +267,13 @@ uri = "<xsl:value-of select="uri"/>"
         <xsl:apply-templates />
     </xsl:template>
     
+    <xsl:template match="list[@style='hanging']/t">
+        <xsl:value-of select="@hangText"/>
+        <xsl:text>&#xa;: </xsl:text>
+        <xsl:apply-templates />
+        <xsl:text>&#xa;&#xa;</xsl:text>
+    </xsl:template>
+    
     <xsl:template match="dd">
         <xsl:text>&#xa;: </xsl:text>
         <xsl:apply-templates />
@@ -286,6 +295,14 @@ uri = "<xsl:value-of select="uri"/>"
     
     <xsl:template match="t[parent::list]">
 
+        <xsl:choose>
+          <xsl:when test="parent::list/@style='hanging'">
+        <xsl:value-of select="@hangText"/>
+        <xsl:text>&#xa;: </xsl:text>
+        <xsl:apply-templates />
+        <xsl:text>&#xa;&#xa;</xsl:text>
+          </xsl:when>
+          <xsl:otherwise>
         <xsl:call-template name="make-list-item">
             <xsl:with-param name="indent-level" select="count(ancestor::list)" />
             <xsl:with-param name="counter-style" select="parent::list/@style" />
@@ -294,6 +311,9 @@ uri = "<xsl:value-of select="uri"/>"
         
         <xsl:apply-templates />
         <xsl:text>&#xa;</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+
     </xsl:template>
     
     <xsl:template match="eref">
