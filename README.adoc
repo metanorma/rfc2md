@@ -1,5 +1,7 @@
 = rfc2md
 
+image:https://github.com/metanorma/rfc2md/workflows/test/badge.svg["Build Status", link="https://github.com/metanorma/rfc2md/actions?workflow=test"]
+
 XSLT conversion from RFC XML v2/v3 to MMark.
 
 = Usage
